@@ -1,19 +1,15 @@
-import express from "express";
-import mongoose from "mongoose";
+import express, { Request, Response } from "express";
+import mongoose, { Schema, Document, model, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-import { Schema, model, Document } from "mongoose";
-
-interface IUser extends Document {
-  email: string;
-  password: string;
-}
+import bodyParser from "body-parser";
 
 const app = express();
-app.use(express.json());
 
-// Verbinding met MongoDB
+// Middleware to parse JSON
+app.use(bodyParser.json());
+
+// MongoDB connection URI
 const mongoUri =
   "mongodb+srv://admin:admin@g2mdb.spmzf.mongodb.net/?retryWrites=true&w=majority&appName=g2mdb";
 mongoose
@@ -21,49 +17,67 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
-// User-schema
+// Define User interface and schema for Mongoose
+interface IUser extends Document {
+  _id: Types.ObjectId;
+  email: string;
+  password: string;
+}
+
 const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
 
 const User = model<IUser>("User", userSchema);
-app.get("/", (req, res) => {
-  res.json("test");
+
+// Route: Test
+app.get("/", (req: Request, res: Response) => {
+  res.json({ message: "API is working!" });
 });
 
-// Endpoint voor login
-app.post("/login", async (req, res) => {
+// Define typing for login request body
+interface LoginBody {
+  email: string;
+  password: string;
+}
+
+// Route: Login
+app.post("/login", async (req: Request<{}, {}, LoginBody>, res: Response) => {
   const { email, password } = req.body;
 
   try {
+    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
+    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, "your-secret-key", {
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id.toString() }, "your-secret-key", {
       expiresIn: "1h",
     });
 
     res.json({ token });
   } catch (error) {
-    console.error(error);
+    console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// Fallback voor andere methoden
-app.use((req, res) => {
+// Fallback for unsupported methods
+app.use((req: Request, res: Response) => {
   res.status(405).json({ message: "Method not allowed" });
 });
 
-// Server starten
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
