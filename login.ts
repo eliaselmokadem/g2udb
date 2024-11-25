@@ -3,6 +3,13 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+import { Schema, model, Document } from "mongoose";
+
+interface IUser extends Document {
+  email: string;
+  password: string;
+}
+
 const app = express();
 app.use(express.json());
 
@@ -15,13 +22,12 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error));
 
 // User-schema
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
 
-const User = mongoose.model("User", userSchema);
-
+const User = model<IUser>("User", userSchema);
 app.get("/", (req, res) => {
   res.json("test");
 });
