@@ -58,7 +58,6 @@ app.use((req, res) => {
 });
 
 // Server starten
-const PORT = 3002; // Of een andere gewenste poort
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(3002, "0.0.0.0", () => {
+  console.log("Server running on http://0.0.0.0:3002");
 });
