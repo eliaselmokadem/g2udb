@@ -9,5 +9,10 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7"
+  },
+  "scripts": {
+    "start": "ts-node login.ts",
+    "build": "tsc",
+    "dev": "npm install ts-node --save-dev && ts-node login.ts"
   }
 }
