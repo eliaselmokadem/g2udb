@@ -58,6 +58,6 @@ app.use((req, res) => {
 });
 
 // Server starten
-app.listen(80, "0.0.0.0", () => {
-  console.log("Server running on http://0.0.0.0:80");
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });
