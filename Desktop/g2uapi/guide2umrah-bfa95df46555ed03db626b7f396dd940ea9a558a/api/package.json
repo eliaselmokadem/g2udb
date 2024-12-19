@@ -1,0 +1,12 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:lambda": "netlify-lambda build src/lambda"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
