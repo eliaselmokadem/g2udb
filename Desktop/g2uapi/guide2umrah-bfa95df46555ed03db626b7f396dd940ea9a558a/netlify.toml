@@ -1,0 +1,8 @@
+[build]
+  functions = "lambda" # Directory where built lambda functions are stored
+  command = "npm run build:lambda"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
